@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper</title>
+</head>
+<body>
+    <style>
+        table{
+            display: block;
+        }
+        
+        tr{
+            height: 11px;
+        }
+        
+        td{
+            border: 5px outset;
+            width: 11px;
+            font-size: 11px;
+        }
+        
+        td:hover{
+            background-color: rgb(190, 190, 190);
+        }
+        
+        .section{
+            display: flex;
+        }
+        
+        .blue{
+            background-color: cyan;
+            text-align: center;
+        }
+        
+        .blue:hover{
+            background-color: blue;
+        }
+        
+        .red{
+            background-color: pink;
+            text-align: center;
+        }
+        
+        .red:hover{
+            background-color: red;
+        }
+        
+        .scoreHead{
+            background-color: lightgoldenrodyellow;
+            width: 200px;
+            height: 210px;
+            text-align: center;
+        }
+        .SQD1{
+            background-color:pink;
+            position:relative;
+            left: 10px;
+            width: 90%;
+            height: 20px;
+            font-size: 15px;
+            text-align: center;
+        }
+        .SQD2{
+            background-color:cyan;
+            position:relative;
+            top:10px;
+            left: 10px;
+            width: 90%;
+            height: 20px;
+            font-size: 15px;
+            text-align: center;
+        }
+        
+        @media screen and (min-width:480px) {
+            #menu{
+                top:190px;
+                right: 20px;
+            }
+        }
+        
+        @media screen and (max-width:480px) {
+            #choice{
+                width:120px;
+                height:50px;
+                bottom: 0px;
+                display: flex;
+            }
+            #menu{
+                bottom:60px;
+                right: 5px;
+                display: flex;
+            }
+        }
+    </style>
+    <div style="position: fixed;right:0px;" id="choice">
+        <div class="red" style="width:80px;height: 80px;border: solid 2px black;" onclick="redc()">Squad 1</div>
+        <div class="blue" style="width:80px;height: 80px;border: solid 2px black;" onclick="bluec()">Squad 2</div>
+    </div>
+    <div style="position: fixed;" id="menu">
+        <div style="width:45px;height:15px;font-size: 10px ;background-color: lightgrey; border-radius: 20%;text-align: center;cursor: default;border: solid 1px black;margin-right: 5px;margin-bottom: 5px;" onclick="submit()">Submit</div>
+        <div style="width:45px;height:15px;font-size: 10px ;background-color: lightgrey; border-radius: 20%;text-align: center;cursor: default;border: solid 1px black;margin-right: 5px;margin-bottom: 5px;" onclick="tm()">Start</div>
+    </div>
+    <script>
+    //Safe Zone Producing
+    let safeZone = []
+    function rep1(value){
+    return value == Coordinate
+    }
+    for(;safeZone.length<16;) {
+    Coordinate = (Math.floor(Math.random()*7)+10)*17+ Math.floor(Math.random()*7)+1;
+    console.log(Coordinate.toString(17))
+    rep = safeZone.find(rep1)
+    if(Boolean(rep == Coordinate)){
+        Coordinate=null
+    }
+    else{
+        safeZone.push(Coordinate)
+    }
+    }
+    
+    console.log(safeZone.sort(function(a,b){return a-b}))
+    
+    //Insert Table
+    let tableNum = 1
+    
+    function Table(){
+    var createSection = document.createElement("DIV")
+    createSection.setAttribute("id","Section"+tableNum)
+    createSection.setAttribute("class","section")
+    document.body.appendChild(createSection)
+    var createTable = document.createElement("TABLE")
+    createTable.setAttribute("id","table"+tableNum)
+    document.getElementById("Section"+tableNum).appendChild(createTable)
+    //upper boxes
+    Up = document.createElement("TR")
+    Up.setAttribute("id","Horizontal"+tableNum)
+    document.getElementById("table"+tableNum).appendChild(Up)
+    blank = document.createElement("TD")
+    document.getElementById("Horizontal"+tableNum).appendChild(blank)
+    let Hor = 1
+    while (Hor < 8){
+        Alpha=Hor+9
+        Alp = Alpha.toString(17)
+        Alphabet= document.createElement("TD")
+        innerAlpha= document.createTextNode(Alp.toUpperCase())
+        Alphabet.appendChild(innerAlpha)
+        document.getElementById("Horizontal"+tableNum).appendChild(Alphabet)
+        Hor = Hor + 1
+    }
+    //inner boxes
+    let rowNum = 1
+    console.log("sucess")
+    while(rowNum < 8){
+        var createRow = document.createElement("TR")
+        createRow.setAttribute("id","table"+tableNum+",row"+rowNum)
+        document.getElementById("table"+tableNum).appendChild(createRow)
+        let cellNum = 1
+        console.log("sucess")
+        //Number Cell
+        var numCell = document.createElement("TD")
+        NumberCell= document.createTextNode(rowNum)
+        numCell.appendChild(NumberCell)
+        document.getElementById("table"+tableNum+",row"+rowNum).appendChild(numCell)
+        //inner Cells
+        while(cellNum < 8){
+            var createCell = document.createElement("TD")
+            createCell.setAttribute("id","table"+tableNum+","+(rowNum+(cellNum+9)*17))
+            createCell.setAttribute("onclick","colorChange("+tableNum+","+(rowNum+(cellNum+9)*17)+")")
+            createCell.setAttribute("name","btns")
+            document.getElementById("table"+tableNum+",row"+rowNum).appendChild(createCell)
+            console.log("sucess")
+            cellNum = cellNum + 1
+        }
+        rowNum = rowNum+1
+    }
+    var scoreboard = document.createElement("DIV")
+    scoreboard.setAttribute("class","scoreHead")
+    scoreboard.setAttribute("id","scoreboard"+tableNum)
+    scoreboard.innerHTML="Survivors"
+    document.getElementById("Section"+tableNum).appendChild(scoreboard)
+    S1 = document.createElement("DIV")
+    S1.setAttribute("class","SQD1")
+    S1.setAttribute("id","SQD1"+tableNum)
+    document.getElementById("scoreboard"+tableNum).appendChild(S1)
+    S2 = document.createElement("DIV")
+    S2.setAttribute("class","SQD2")
+    S2.setAttribute("id","SQD2"+tableNum)
+    document.getElementById("scoreboard"+tableNum).appendChild(S2)
+    timer=document.createElement("DIV")
+    timer.setAttribute("id","timer"+tableNum)
+    timer.setAttribute("style","font-size:80px;margin-top:30px")
+    timing = 30
+    timer.innerHTML=timing
+    document.getElementById("scoreboard"+tableNum).appendChild(timer)
+    tableNum= tableNum+1
+    }
+    Table()
+    
+    //Color Notation
+    function bluec(){
+    color="blue"
+    }
+    function redc(){
+    color="red"
+    }
+    redc()
+    
+    all = []
+    blue = []
+    red = []
+    //Color Change
+    function colorChange(tN,id){
+    console.log(id)
+    console.log(tN)
+    if (all.indexOf(id) == -1){
+        if (color=="blue") {
+            blue.push(id)
+        } 
+        else{
+            red.push(id)
+        }
+        all.push(id)
+        document.getElementById("table"+tN+","+id).setAttribute("class",color)
+    }
+    else if (blue.indexOf(id)==-1 && color=="blue"){
+        red.splice(red.indexOf(id),1)
+        blue.push(id)
+        document.getElementById("table"+tN+","+id).setAttribute("class",color)
+    }
+    else if (red.indexOf(id)==-1 && color=="red"){
+        blue.splice(blue.indexOf(id),1)
+        red.push(id)
+        document.getElementById("table"+tN+","+id).setAttribute("class",color)
+    }
+    else{
+        all.splice(all.indexOf(id),1)
+        blue.splice(blue.indexOf(id),1)
+        red.splice(red.indexOf(id),1)
+        document.getElementById("table"+tN+","+id).removeAttribute("class")
+    }
+    console.log(all)
+    console.log(blue)
+    console.log(red)    
+    }
+    
+    //Compare outcomes
+    function outcome(){
+    red1=[]
+    blue1=[]
+    red1 = red.filter(list)
+    blue1 = blue.filter(list)
+    function list(same){
+        if(safeZone.indexOf(same)>-1){
+            return same
+        }
+    }
+    Squad1= red1.length
+    Squad2= blue1.length    
+    console.log(Squad1)
+    console.log(Squad2)
+    document.getElementById("SQD1"+(tableNum-1)).innerHTML="Squad 1:"+Squad1
+    document.getElementById("SQD2"+(tableNum-1)).innerHTML="Squad 2:"+Squad2
+    }
+    
+    //submit button
+    function submit(){
+    outcome()
+    Table()
+    }
+    
+    //timer
+    function time(){
+    timing= timing - 1
+    document.getElementById("timer"+(tableNum-1)).innerHTML=timing
+    if (timing<=0){
+        clearInterval(tim)
+    }
+    if (timing<=5){
+        document.getElementById("timer"+(tableNum-1)).setAttribute("style","color:red;font-size:80px;margin-top:30px")
+    }
+    }
+    
+    function tm(){
+    tim = setInterval(time,1000)
+    }
+    </script>
+</body>
+</html>
